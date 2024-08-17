@@ -34,7 +34,7 @@ public final class PlaylistServiceImpl implements PlaylistService {
         return playlists.get(id);
     }
 
-    public void addSongIntoPlaylist(long id, Song song) {
+    public void addSongIntoPlaylist(final long id,final Song song) {
         Playlist playlist = playlists.get(id);
         if (playlist != null) {
             playlist.getSongs().add(song);
