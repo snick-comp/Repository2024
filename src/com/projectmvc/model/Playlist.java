@@ -3,6 +3,7 @@ import java.util.Collection;
 
 
 public class Playlist {
+	
     private long id;
     private String name;
     private Collection<Song> songs;

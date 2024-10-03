@@ -4,6 +4,10 @@ import java.util.Collection;
 
 
 public interface SongDAO {
-    void save(Song song);
-    Collection<Song> findAll();
+
+    void addSong(final Song song);
+
+    Song getSongById(final Long id);
+
+    Collection<Song> getAllSongs();
 }
