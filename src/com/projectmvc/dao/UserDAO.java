@@ -10,4 +10,8 @@ public interface UserDAO {
     User getUserByEmailAndPassword(final String emailAddress, final String password);
 
     Collection<User> getAllUsers();
+    
+    Collection<String> getSongListeningActivityToday(final Long userId);
+    
+    Collection<String> getSongStartAndEndTimeToday(final Long userId);
 }

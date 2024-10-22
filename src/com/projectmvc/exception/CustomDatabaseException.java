@@ -15,3 +15,4 @@ public final class CustomDatabaseException extends RuntimeException {
         super(message, cause);
     }
 }
+

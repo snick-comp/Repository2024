@@ -3,6 +3,7 @@
   <groupId>com.projectMVCfinal.project</groupId>
   <artifactId>ProjectMVCfinal</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
   <name>SpotifyAccount</name>
   <description>My project SpotifyAccount</description>
   <dependencies>
@@ -12,6 +13,24 @@
     <artifactId>mysql-connector-j</artifactId>
     <version>9.0.0</version>
 </dependency>
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>1.7.30</version>
+<exclusions>
+<exclusion>
+<groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+</exclusion>
+</exclusions>
+</dependency>
+<dependency>
+  <groupId>javax.servlet</groupId>
+  <artifactId>javax.servlet-api</artifactId>
+  <version>4.0.1</version>
+  <scope>provided</scope>
+</dependency>
+
   </dependencies>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -20,8 +39,13 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <release>22</release>
+          <release>23</release>
         </configuration>
+      </plugin>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.3.2</version>
       </plugin>
     </plugins>
   </build>

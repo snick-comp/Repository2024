@@ -1,7 +1,7 @@
 package com.projectmvc.dao;
 import com.projectmvc.connection.ConnectionManager;
 import com.projectmvc.exception.CustomDatabaseException;
-import com.projectmvc.model.Song;
+import com.projectmvc.model.Artist;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 
-public final class SongDAOImpl implements SongDAO {
+public final class ArtistDAOImpl implements ArtistDAO {
 
-    public void addSong(final Song song) {
+    public void addArtist(final Artist artist) {
         
-    	final String query = "INSERT INTO songs (name) VALUES (?)";
+    	final String query = "INSERT INTO artists (id, name, genre) VALUES (?, ?, ?)";
         final ConnectionManager connectionManager = new ConnectionManager();
         Connection connection = null;
 
@@ -23,23 +23,23 @@ public final class SongDAOImpl implements SongDAO {
             connection.setAutoCommit(false);
            
             try (PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setString(1, song.getName());
+                statement.setLong(1, artist.getId());
+                statement.setString(2, artist.getName());
+                statement.setString(3, artist.getGenre());
                 statement.executeUpdate();
             }
             connection.commit();
-       
+        
         } catch (final SQLException e) {
             if (connection != null) {
-             
-            	try {
+                try {
                     connection.rollback();
-              
-            	} catch (final SQLException rollbackEx) {
-             
-            		throw new CustomDatabaseException("Error rolling back transaction", rollbackEx);
+                } catch (final SQLException rollbackEx) {
+                    throw new CustomDatabaseException("Error rolling back transaction", rollbackEx);
                 }
             }
-            		throw new CustomDatabaseException("Error adding song", e);
+           
+            throw new CustomDatabaseException("Error adding artist", e);
        
         } finally {
             if (connection != null) {
@@ -48,30 +48,31 @@ public final class SongDAOImpl implements SongDAO {
         }
     }
 
-    public Song getSongById(final Long id) {
+    public Artist getArtistById(final Long id) {
         
-    	final String query = "SELECT * FROM songs WHERE id = ?";
+    	final String query = "SELECT * FROM artists WHERE id = ?";
         final ConnectionManager connectionManager = new ConnectionManager();
         Connection connection = null;
 
         try {
             connection = connectionManager.borrowConnection();
-            
+           
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setLong(1, id);
-                
+              
                 try (ResultSet resultSet = statement.executeQuery()) {
                     if (resultSet.next()) {
-                        final Song song = new Song();
-                        song.setId(resultSet.getLong("id"));
-                        song.setName(resultSet.getString("name"));
-                        return song;
+                        final Artist artist = new Artist();
+                        artist.setId(resultSet.getLong("id"));
+                        artist.setName(resultSet.getString("name"));
+                        artist.setGenre(resultSet.getString("genre"));
+                        return artist;
                     }
                 }
             }
        
         } catch (final SQLException e) {
-            throw new CustomDatabaseException("Error getting song by ID", e);
+            throw new CustomDatabaseException("Error getting artist by ID", e);
        
         } finally {
             if (connection != null) {
@@ -81,10 +82,10 @@ public final class SongDAOImpl implements SongDAO {
         return null;
     }
 
-    public Collection<Song> getAllSongs() {
-        
-    	final Collection<Song> songs = new ArrayList<>();
-        final String query = "SELECT * FROM songs";
+    public Collection<Artist> getAllArtists() {
+       
+    	final Collection<Artist> artists = new ArrayList<>();
+        final String query = "SELECT * FROM artists";
         final ConnectionManager connectionManager = new ConnectionManager();
         Connection connection = null;
 
@@ -94,22 +95,22 @@ public final class SongDAOImpl implements SongDAO {
             try (PreparedStatement statement = connection.prepareStatement(query);
                  ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    final Song song = new Song();
-                    song.setId(resultSet.getLong("id"));
-                    song.setName(resultSet.getString("name"));
-                    songs.add(song);
+                    final Artist artist = new Artist();
+                    artist.setId(resultSet.getLong("id"));
+                    artist.setName(resultSet.getString("name"));
+                    artist.setGenre(resultSet.getString("genre"));
+                    artists.add(artist);
                 }
             }
-        
+       
         } catch (final SQLException e) {
-            
-        	throw new CustomDatabaseException("Error getting all songs", e);
+            throw new CustomDatabaseException("Error getting all artists", e);
        
         } finally {
             if (connection != null) {
                 connectionManager.returnConnection(connection);
             }
         }
-        return songs;
+        return artists;
     }
 }
