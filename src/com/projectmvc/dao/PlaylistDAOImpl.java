@@ -75,7 +75,8 @@ public final class PlaylistDAOImpl implements PlaylistDAO {
             }
         
         } catch (final SQLException e) {
-            throw new CustomDatabaseException("Error getting playlist by ID", e);
+           
+        	throw new CustomDatabaseException("Error getting playlist by ID", e);
         
         } finally {
             if (connection != null) {
@@ -107,8 +108,10 @@ public final class PlaylistDAOImpl implements PlaylistDAO {
              
             	try {
                     connection.rollback();
-                } catch (final SQLException rollbackEx) {
-                    throw new CustomDatabaseException("Error rolling back transaction", rollbackEx);
+               
+            	} catch (final SQLException rollbackEx) {
+                  
+            		throw new CustomDatabaseException("Error rolling back transaction", rollbackEx);
                 }
             }
          
@@ -147,7 +150,8 @@ public final class PlaylistDAOImpl implements PlaylistDAO {
             }
        
         } catch (final SQLException e) {
-            throw new CustomDatabaseException("Error getting songs in playlist", e);
+           
+        	throw new CustomDatabaseException("Error getting songs in playlist", e);
         
         } finally {
             if (connection != null) {

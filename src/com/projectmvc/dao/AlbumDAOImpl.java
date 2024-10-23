@@ -1,4 +1,5 @@
 package com.projectmvc.dao;
+import java.util.Optional;
 import com.projectmvc.connection.ConnectionManager;
 import com.projectmvc.exception.CustomDatabaseException;
 import com.projectmvc.model.Album;
@@ -22,15 +23,16 @@ public final class AlbumDAOImpl implements AlbumDAO {
      * @param album The Album object to be added.
      */
     public void addAlbum(final Album album) {
-    	
-        final String query = "INSERT INTO albums (id, title, genre, release_date) VALUES (?, ?, ?, ?)";
+        
+    	final String query = "INSERT INTO albums (id, title, genre, release_date) VALUES (?, ?, ?, ?)";
         final ConnectionManager connectionManager = new ConnectionManager();
-        Connection connection = null;
+        Optional<Connection> optionalConnection = Optional.empty();
 
         try {
-            connection = connectionManager.borrowConnection();
+            Connection connection = connectionManager.borrowConnection();
+            optionalConnection = Optional.of(connection); 
             connection.setAutoCommit(false);
-            
+
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setLong(1, album.getId());
                 statement.setString(2, album.getTitle());
@@ -39,23 +41,22 @@ public final class AlbumDAOImpl implements AlbumDAO {
                 statement.executeUpdate();
             }
             connection.commit();
-            
+
         } catch (final SQLException e) {
-            if (connection != null) {
-            	
-                try {
-                    connection.rollback();
-                    
+            optionalConnection.ifPresent(conn -> {
+                
+            	try {
+                    conn.rollback();
                 } catch (final SQLException rollbackEx) {
-                    throw new CustomDatabaseException("Error rolling back transaction", rollbackEx);
+               
+                	throw new CustomDatabaseException("Error rolling back transaction", rollbackEx);
                 }
-            }
+            });
+           
             throw new CustomDatabaseException("Error adding album", e);
-            
+
         } finally {
-            if (connection != null) {
-                connectionManager.returnConnection(connection);
-            }
+            optionalConnection.ifPresent(connectionManager::returnConnection);
         }
     }
 
@@ -66,17 +67,18 @@ public final class AlbumDAOImpl implements AlbumDAO {
      * @return The Album object if found, null otherwise.
      */
     public Album getAlbumById(final Long id) {
-       
+        
     	final String query = "SELECT * FROM albums WHERE id = ?";
         final ConnectionManager connectionManager = new ConnectionManager();
-        Connection connection = null;
+        Optional<Connection> optionalConnection = Optional.empty();
 
         try {
-            connection = connectionManager.borrowConnection();
-            
+            Connection connection = connectionManager.borrowConnection();
+            optionalConnection = Optional.of(connection); 
+
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.setLong(1, id);
-            
+
                 try (ResultSet resultSet = statement.executeQuery()) {
                     if (resultSet.next()) {
                         final Album album = new Album();
@@ -88,15 +90,13 @@ public final class AlbumDAOImpl implements AlbumDAO {
                     }
                 }
             }
-       
+
         } catch (final SQLException e) {
-          
+            
         	throw new CustomDatabaseException("Error getting album by ID", e);
-        
+
         } finally {
-            if (connection != null) {
-                connectionManager.returnConnection(connection);
-            }
+            optionalConnection.ifPresent(connectionManager::returnConnection);
         }
         return null;
     }
@@ -107,15 +107,15 @@ public final class AlbumDAOImpl implements AlbumDAO {
      * @return A Collection of Album objects representing all albums in the database.
      */
     public Collection<Album> getAllAlbums() {
-        
-    	final Collection<Album> albums = new ArrayList<>();
+        final Collection<Album> albums = new ArrayList<>();
         final String query = "SELECT * FROM albums";
         final ConnectionManager connectionManager = new ConnectionManager();
-        Connection connection = null;
+        Optional<Connection> optionalConnection = Optional.empty();
 
         try {
-            connection = connectionManager.borrowConnection();
-            
+            Connection connection = connectionManager.borrowConnection();
+            optionalConnection = Optional.of(connection); //
+
             try (PreparedStatement statement = connection.prepareStatement(query);
                  ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
@@ -127,15 +127,12 @@ public final class AlbumDAOImpl implements AlbumDAO {
                     albums.add(album);
                 }
             }
-        
+
         } catch (final SQLException e) {
-           
-        	throw new CustomDatabaseException("Error getting all albums", e);
-        
+            throw new CustomDatabaseException("Error getting all albums", e);
+
         } finally {
-            if (connection != null) {
-                connectionManager.returnConnection(connection);
-            }
+            optionalConnection.ifPresent(connectionManager::returnConnection);
         }
         return albums;
     }
