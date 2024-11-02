@@ -9,12 +9,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import org.springframework.stereotype.Repository;
 
 
 /**
  * AlbumDAOImpl is the implementation of the AlbumDAO interface.
  * It provides methods to interact with the 'albums' table in the database.
  */
+@Repository
 public final class AlbumDAOImpl implements AlbumDAO {
 
     /**

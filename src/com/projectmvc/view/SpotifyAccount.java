@@ -7,8 +7,6 @@ import java.util.Scanner;
 import java.util.Collection;
 import com.projectmvc.validations.*;
 
-
-
 public class SpotifyAccount {
 
     private static final Scanner scanner = new Scanner(System.in);
